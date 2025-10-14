@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "better-sqlite3": "^12.4.1",
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "mariadb": "^3.4.5",
+    "octokit": "^5.0.3",
+    "sequelize": "^6.37.7",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.27"
+  }
+}
