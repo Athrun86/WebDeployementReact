@@ -14,11 +14,9 @@ app.use(bodyParser.json());
 
 
 app.post('/users', async (req, res) => {
-    try {
-        const users = await Users.findAll()
-    } catch (e) {
+    String username = req.body.username;
+    String password = req.body.password;
 
-    }
 })
 
 

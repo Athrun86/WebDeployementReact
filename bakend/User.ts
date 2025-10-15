@@ -1,26 +1,27 @@
-import {Table, Column , Model , DataType} from "sequelize-typescript";
 
+import {Table, Column, Model, DataType} from "sequelize-typescript";
 
 @Table({
     tableName: "users",
     timestamps: false,
 })
-export class Users extends Model <Users> {
+export class Users extends Model {
     @Column({
         type: DataType.STRING,
         allowNull: false,
         primaryKey: true,
     })
-    token!: string;
+    declare token: string;
 
     @Column({
         type: DataType.STRING,
         allowNull: false,
     })
-    username!: string;
+    declare username: string;
+
     @Column({
         type: DataType.STRING,
         allowNull: false,
     })
-    password!: string;
+    declare password: string;
 }

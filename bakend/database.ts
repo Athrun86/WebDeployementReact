@@ -16,7 +16,8 @@ function CreateDatabaseTable(username: string, password: string) {
     const conn = mariadb.createConnection({
         host: 'localhost',
         user: username,
-        password: password
+        password: password,
+        port: 3308
     });
 
     conn.then(async (connection) => {
@@ -32,17 +33,20 @@ function SequelizeConnection(username: string, password: string) {
     return  new Sequelize('github', username, password, {
         host: 'localhost',
         dialect: 'mariadb',
+        port: 3308,
         models: [Users] // or [Player, Team],
     });
 
 }
 async function insertUser(token: string, username: string, password: string) {
     password = hashSync(password, 10);
-    await Users.create({
-        token,
-        username,
-        password
-    })
+    await Users.create(
+        {
+            token: token,
+            username: username,
+            password: password
+        }
+    )
     console.log(" user created successfully.");
 }
 async function CreateDatabase() {
