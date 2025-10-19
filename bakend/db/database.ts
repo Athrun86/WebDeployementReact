@@ -1,6 +1,6 @@
 import {Sequelize } from 'sequelize-typescript';
 import * as mariadb from "mariadb";
-import {Users} from "./User"
+import {Users} from "./models/User"
 import {hashSync} from "bcrypt";
 
 import * as readline from "readline";
