@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "module": "commonjs",
+    "module": "CommonJS",
     "lib": [
       "ES2020"
     ],
     "outDir": "./dist",
     "rootDir": "./",
-    "strict": true,
+
     "esModuleInterop": true,
     "skipDefaultLibCheck": true,
 
@@ -16,11 +16,12 @@
     "skipLibCheck": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true
   },
   "include":
     [
-      "*.ts"
+      "**/*.ts"
     ],
   "exclude": [
     "node_modules",

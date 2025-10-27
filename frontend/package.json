@@ -4,16 +4,21 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "../Client/node_modules/.bin/vite",
-    "build": "../Client/node_modules/.bin/tsc -b && vite build",
-    "lint": "../Client/node_modules/.bin/eslint .",
-    "preview": "../Client/node_modules/.bin/vite preview",
-    "express": "node ../bakend/Express.ts"
+    "dev": ".\\node_modules\\.bin\\vite",
+    "build": "./node_modules/.bin/tsc -b && vite build",
+    "lint": "./node_modules/.bin/eslint .",
+    "preview": "./node_modules/.bin/vite preview",
+    "express": "node ../bakend/server.ts"
   },
   "dependencies": {
+    "@types/react-copy-to-clipboard": "^5.0.7",
+    "class-variance-authority": "^0.7.1",
     "jotai": "^2.15.0",
+    "lucide-react": "^0.546.0",
+    "motion": "^12.23.24",
     "octogit": "^0.1.0",
     "react": "^19.1.1",
+    "react-copy-button": "^0.3.0",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.3"
   },

@@ -1,10 +1,12 @@
 import  {useState } from "react";
-import ProjectTemplate from "./ProjectTemplate.tsx";
+import ProjectTemplate from "../Components/projectTemplate.tsx";
 import "../style/_shared.scss";
 import {useNavigate} from "react-router-dom";
 
 
 const ProjectListPage = () => {
+
+
     const [projects] = useState([
         {id: 1, title: "Project Alpha", groupNumber: 1, description: "Description for Project Alpha"},
         {id: 2, title: "Project Beta", groupNumber: 2, description: "Description for Project Beta"},

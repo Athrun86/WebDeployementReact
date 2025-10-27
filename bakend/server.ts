@@ -1,34 +1,42 @@
-import express from 'express';
-import bodyParser from 'body-parser';
 import { Octokit } from "octokit";
-import {Users} from './models/User';
-import {Sequelize } from 'sequelize-typescript';
-import * as mariadb from "mariadb";
-import {hashSync, compareSync} from "bcrypt";
-import * as seqserver from "./authService"
+import dotenv from "dotenv";
+import app from "./app";
+import { sequelize, testConnection } from "./db/sequelizeInstance";
+
+dotenv.config();
+
+const port = Number(process.env.PORT ?? 3000);
 
 
 
 const octogit = new Octokit({
     auth: "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"
 });
-const app = express()
-const port = 3000;
-app.use(bodyParser.json());
 
 
-app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) {
-        return res.status(400).json({ success: false, message: "Username and password are required" });
+async function startServer() {
+    try {
+        await testConnection();
+        await sequelize.authenticate();
+        await sequelize.sync();
+        console.log("Database connected and synchronized.");
+        const server = app.listen(port, () => {
+            console.log(`Server is running on http://localhost:${port}`);
+        });
+         const shutdown = async () => {
+             console.log("Shutting down server...");
+             try  { await sequelize.close();  } catch (e) { console.error("Error closing database connection:", e); }
+                 server.close(() => process.exit(0));
+                 setTimeout(() => process.exit(1), 10000);
+
+         };
+         process.on("SIGINT", shutdown);
+            process.on("SIGTERM", shutdown);
+
+    } catch (err) {
+        console.error('startup error',err);
+        process.exit(1);
     }
-    const isvalid = await seqserver.checkLogin(username, password);
-    if (!isvalid) {
-        return res.status(401).json({ success: false, message: "Invalid username or password" });
-    }
-    return res.status(200).json({ success: true, message: "Login successful" });
-
-
-})
-
-
+}
+console.log("Starting server...");
+startServer();

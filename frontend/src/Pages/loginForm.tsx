@@ -1,6 +1,6 @@
 import "react";
 import {useState} from "react";
-import "../style/LoginForm.scss";
+import "../style/loginForm.scss";
 import "../style/_shared.scss"
 
 

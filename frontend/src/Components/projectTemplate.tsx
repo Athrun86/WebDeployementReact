@@ -1,6 +1,6 @@
 import React from "react";
 import "../style/_shared.scss"
-import "../style/ProjectTemplate.scss"
+import "../style/projectTemplate.scss"
 type Project = {
     id: number;
     title: string;

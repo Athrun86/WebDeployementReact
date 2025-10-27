@@ -1,87 +1,51 @@
 // typescript
 // File: `frontend/src/Components/projectForm.tsx`
-import { useState, useEffect } from "react";
+import {useEffect, useState} from "react";
 import "../style/_shared.scss";
 import "../style/projectForm.scss";
-import CopyButton from "./copyButton.tsx";
-import OrganisationSelect from "./organisationSelect.tsx";
-import api from "../api/repository";
+import CopyButton from "../Components/copyButton.tsx";
+import {requestOrganisations} from "../api/repository.ts";
+import {useAtom} from "jotai";
+import {tokenAtom} from "../utils/tokenAtom.ts";
+
+
+
+
 
 const ProjectForm = () => {
     const [projectName, setProjectName] = useState('');
     const [minMembers, setMinMembers] = useState<number | undefined>();
     const [maxMembers, setMaxMembers] = useState<number | undefined>();
-    const [organisation, setOrganisation] = useState<string | undefined>();
-    const [localId, setLocalId] = useState<string | undefined>(); // id suggéré / réel
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [token] = useAtom(tokenAtom);
 
-    // Au montage : récupérer tous les projets, déterminer l'id max puis +1
+
     useEffect(() => {
-        let mounted = true;
-        const fetchMaxId = async () => {
-            setLoading(true);
-            setError(null);
+        const fetchOrganisations = async () => {
             try {
-                const res = await api.get('/projects');
-                const data = res.data;
-                // extractions flexibles selon structure retournée par l'API
-                const list = Array.isArray(data)
-                    ? data
-                    : Array.isArray(data?.projects)
-                        ? data.projects
-                        : Array.isArray(data?.data)
-                            ? data.data
-                            : [];
-                const maxId = list.reduce((acc: number, p: any) => {
-                    const id = Number(p?.id ?? p?._id ?? p?.ID ?? 0);
-                    return Number.isFinite(id) ? Math.max(acc, id) : acc;
-                }, 0);
-                if (mounted) {
-                    setLocalId(String(maxId + 1));
-                }
-            } catch (err: any) {
-                if (mounted) setError(err?.response?.data?.message ?? err?.message ?? 'Erreur chargement projets');
-            } finally {
-                if (mounted) setLoading(false);
+                console.log("Fetch Organisations");
+                if (!token) return;
+                const orgs = await requestOrganisations(token);
+                console.log('Fetched organisations:', orgs);
             }
-        };
-        fetchMaxId();
-        return () => {
-            mounted = false;
-        };
+            catch (e){
+                console.error('Error fetching organisations:', e);
+            }
+        }
+        fetchOrganisations();
     }, []);
 
-    const inviteLink = `${window.location.origin}/add-student/${localId ?? 'nouveau'}`;
+    const inviteLink = `${window.location.origin}/add-student?project=`;
 
-    const handleGenerate = (e?: React.FormEvent) => {
-        if (e) e.preventDefault();
-        // ici appeler l'API pour créer le projet ; on garde un console.log pour l'exemple
-        console.log("Génération / mise à jour projet", {
-            projectName,
-            minMembers,
-            maxMembers,
-            organisation
-        });
-        // Exemple : après création côté backend vous pourriez faire :
-        // const res = await api.post('/projects', { name: projectName, minMembers, maxMembers, organisation });
-        // if (res?.data?.id) setLocalId(String(res.data.id));
-    };
 
-    if (loading) {
-        return (
-            <div className="project-form-container">
-                <p>Chargement des projets...</p>
-            </div>
-        );
-    }
+
+
 
     return (
         <div className="general-bg brushed-metal">
             <div className="glow-effect"></div>
             <div className="login-center">
                 <div className="project-form-container">
-                    <form onSubmit={handleGenerate}>
+                    <form>
                         <div className="project-form-input-row">
                             <label htmlFor="ProjectName">Nom du projet</label>
                             <input
@@ -96,11 +60,7 @@ const ProjectForm = () => {
                         </div>
                         <div className="project-form-input-row">
                             <label htmlFor="OrganisationSelect">Organisation</label>
-                            <OrganisationSelect
-                                value={organisation}
-                                onChange={setOrganisation}
-                                placeholder="Choisir une organisation"
-                            />
+
                         </div>
                         <div className="member-row">
                             <label htmlFor="MinMemberCount">Membres</label>
@@ -132,7 +92,6 @@ const ProjectForm = () => {
                             </div>
                         </div>
 
-                        {error && <div style={{ color: 'crimson', marginBottom: 8 }}>{error}</div>}
 
                         <button type="submit" className="project-form-btn">
                             Générer
