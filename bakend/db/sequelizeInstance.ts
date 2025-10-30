@@ -3,6 +3,8 @@ import { Users } from '../models/User';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import {Project} from "../models/Project";
+import { Group } from "../models/Group";
+import { Student } from "../models/Student";
 
 dotenv.config({path: path.join(__dirname, '.env') });
 
@@ -18,7 +20,7 @@ export const sequelize = new Sequelize(
         port: Number(process.env.DB_PORT) || 3308,
         dialect: 'mariadb',
         dialectOptions: require('mariadb'),
-        models: [Users, Project],
+        models: [Users, Project, Group, Student],
 
     }
 );
@@ -41,5 +43,15 @@ export async function testConnection() {
     }
 
 }
+
+// Associations
+Project.hasMany(Group, { foreignKey: "projectId" });
+Group.belongsTo(Project, { foreignKey: "projectId" });
+Group.hasMany(Student, { foreignKey: "groupId" });
+Student.belongsTo(Group, { foreignKey: "groupId" });
+
+export { Project };
+export { Group };
+export { Student };
 
 export default sequelize;

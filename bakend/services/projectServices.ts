@@ -4,6 +4,7 @@ import {decryptToken} from "../utils/crypto";
 import {components} from "@octokit/openapi-types";
 import {NextFunction} from "connect";
 import any = jasmine.any;
+import { Project } from "../models/Project";
 
 type Organisation = components["schemas"]["organization-simple"];
 
@@ -43,4 +44,44 @@ export async function listOrganisations() {
     }
     }
 
-
+export async function createProject({
+    id, // optionnel
+    name,
+    organizationName,
+    githubUrl,
+    minMembers,
+    maxMembers,
+    repoPattern,
+    securityKey
+}: {
+    id?: number,
+    name: string,
+    organizationName: string,
+    githubUrl: string,
+    minMembers: number,
+    maxMembers: number,
+    repoPattern: string,
+    securityKey: string
+}) {
+    // Si un id est fourni, vérifier qu'il n'existe pas déjà
+    if (id) {
+        const existing = await Project.findByPk(id);
+        if (existing) {
+            const err: any = new Error('Un projet avec cet id existe déjà');
+            err.status = 409;
+            throw err;
+        }
+    }
+    // Création du projet en base, avec id fourni si présent
+    const project = await Project.create({
+        ...(id ? { id } : {}),
+        name,
+        organizationName,
+        githubUrl,
+        minMembers,
+        maxMembers,
+        repoPattern,
+        securityKey
+    });
+    return project;
+}
