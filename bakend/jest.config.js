@@ -11,7 +11,7 @@ module.exports = {
 
   },
   transformIgnorePatterns: [
-    "/node_modules/(?!octokit)"
+    "/node_modules/(?!octokit|@octokit/.*)"
   ],
   moduleFileExtensions: ['ts', 'js', 'tsx', 'node'],
 };

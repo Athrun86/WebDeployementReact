@@ -7,13 +7,22 @@ const JWT_SECRET = process.env.JWT_SECRET || "your_json_web_token_secret_key";
 
 
 router.get('/organisations', async (req, res) => {
-try {
-    const organisations = await listOrganisations();
-    return  res.status(200).json({ success: true, organisations : organisations});
-}
-catch(err: any) {
-    return res.status(500).json({ success: false, message: err.message || "Internal server error"});
-}
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ success: false, message: 'Token manquant ou mal formé' });
+    }
+    const token = authHeader.split(' ')[1];
+    try {
+        jwt.verify(token, JWT_SECRET);
+    } catch (err) {
+        return res.status(401).json({ success: false, message: 'Token invalide ou expiré' });
+    }
+    try {
+        const organisations = await listOrganisations();
+        return  res.status(200).json({ success: true, organisations : organisations});
+    }
+    catch(err: any) {
+        return res.status(500).json({ success: false, message: err.message || "Internal server error"});
+    }
 });
 export default router;
-

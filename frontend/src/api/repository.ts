@@ -1,7 +1,5 @@
 import axios from "axios";
 
-
-
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export async function requestvalidationToken(token: string): Promise<boolean> {
@@ -15,11 +13,14 @@ export async function requestvalidationToken(token: string): Promise<boolean> {
         return false;
     }
 }
-export async function requestOrganisations(token: string): Promise<string[]> {
-        const resp = await axios.get(`${apiUrl}/projects/organisations`, {
-            headers: {authorization: `Bearer ${token}`}
+
+export async function requestOrganisations(token: string): Promise<any[]> {
+    try {
+        const resp = await axios.get(apiUrl + '/projects/organisations', {
+            headers: { authorization: `Bearer ${token}` }
         });
-        return resp.data.organisations || [];
-
-
+        return resp.data.organisations;
+    } catch (err) {
+        throw err;
+    }
 }

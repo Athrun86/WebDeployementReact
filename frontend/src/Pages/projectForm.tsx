@@ -4,41 +4,36 @@ import {useEffect, useState} from "react";
 import "../style/_shared.scss";
 import "../style/projectForm.scss";
 import CopyButton from "../Components/copyButton.tsx";
+import OrganisationSelect from "../Components/organisationSelect.tsx";
 import {requestOrganisations} from "../api/repository.ts";
 import {useAtom} from "jotai";
 import {tokenAtom} from "../utils/tokenAtom.ts";
-
-
-
-
 
 const ProjectForm = () => {
     const [projectName, setProjectName] = useState('');
     const [minMembers, setMinMembers] = useState<number | undefined>();
     const [maxMembers, setMaxMembers] = useState<number | undefined>();
     const [token] = useAtom(tokenAtom);
-
+    const [organisations, setOrganisations] = useState<any[]>([]);
+    const [selectedOrganisationId, setSelectedOrganisationId] = useState<number | undefined>();
 
     useEffect(() => {
-        const fetchOrganisations = async () => {
+        async function fetchOrganisations() {
             try {
-                console.log("Fetch Organisations");
                 if (!token) return;
+                console.log("Début récupération organisations");
                 const orgs = await requestOrganisations(token);
-                console.log('Fetched organisations:', orgs);
-            }
-            catch (e){
-                console.error('Error fetching organisations:', e);
+                console.log("Organisations récupérées dans le composant :", orgs);
+                setOrganisations(orgs);
+                console.log(organisations);
+            } catch (e) {
+                console.error("Erreur récupération organisations dans composant:", e);
             }
         }
         fetchOrganisations();
-    }, []);
+    }, [token]);
 
     const inviteLink = `${window.location.origin}/add-student?project=`;
-
-
-
-
 
     return (
         <div className="general-bg brushed-metal">
@@ -60,7 +55,11 @@ const ProjectForm = () => {
                         </div>
                         <div className="project-form-input-row">
                             <label htmlFor="OrganisationSelect">Organisation</label>
-
+                            <OrganisationSelect
+                                organisations={organisations}
+                                value={selectedOrganisationId}
+                                onChange={setSelectedOrganisationId}
+                            />
                         </div>
                         <div className="member-row">
                             <label htmlFor="MinMemberCount">Membres</label>
@@ -91,12 +90,9 @@ const ProjectForm = () => {
                                 <CopyButton text={inviteLink} />
                             </div>
                         </div>
-
-
                         <button type="submit" className="project-form-btn">
                             Générer
                         </button>
-
                         <div className="project-form-input-row">
                             <label htmlFor="GroupsCreated">Groupes déjà créés</label>
                             <input id="GroupsCreated" type="text" disabled={true} autoComplete="off" />

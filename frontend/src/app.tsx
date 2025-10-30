@@ -1,7 +1,6 @@
-
 // typescript
 // File: `frontend/src/app.tsx`
-import { useEffect } from 'react';
+
 
 import axios from 'axios';
 import LoginForm from './Pages/loginForm.tsx';
@@ -11,36 +10,18 @@ import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import StudentAdd from './Pages/studentAdd.tsx';
 import { useAtom } from 'jotai';
 import {tokenAtom} from "./utils/tokenAtom.ts";
-import  { requestvalidationToken } from "./api/repository.ts";
+import { useAuthRedirect } from './hooks/useAuthRedirect';
 
 
 function AppContent() {
     const [token, setToken] = useAtom(tokenAtom);
     const navigate = useNavigate();
     const apiUrl = import.meta.env.VITE_API_URL;
-    async function validateToken() {
-        if (!token) return;
-        try {
-            const isValid = await requestvalidationToken(token);
-           if (!isValid) {
-                setToken(null);
-                navigate('/login');
-           }
-           else {
-                navigate('/projects');
-           }
-        }
-        catch (err) {
-            setToken(null);
-            navigate('/login');
-        }
-    }
-    useEffect(() => {
-        validateToken();
-    }, [token]);
 
+    // Vérification automatique du token et redirection
+    useAuthRedirect();
 
-
+    // Suppression de la logique validateToken, on s'appuie sur le hook
 
     async function handleLogin(username: string, password: string) {
         try {
@@ -58,7 +39,7 @@ function AppContent() {
         }
     }
 
-    if (!validateToken()) {
+    if (!token) {
         return <LoginForm onLogin={handleLogin} />;
     }
 
