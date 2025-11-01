@@ -46,3 +46,17 @@ export async function createProject(data: any, token: string) {
         throw err;
     }
 }
+export async function requestProjects(token: string)
+{
+    try {
+        const resp = await axios.get(apiUrl + 'projects/list', {
+            headers: { authorization: `Bearer ${token}` }
+        });
+        return resp.data.projects;
+    }
+    catch (err) {
+        throw err;
+
+    }
+
+}

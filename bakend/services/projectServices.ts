@@ -85,3 +85,15 @@ export async function createProject({
     });
     return project;
 }
+export async function getNextProjectId() {
+    const maxProject = await Project.findOne({
+        order: [['id', 'DESC']]
+    });
+    return maxProject ? maxProject.id + 1 : 1;
+}
+export async function listProjects() {
+    const projects = await Project.findAll({
+        attributes: ['id', 'name', 'organizationName']
+    });
+    return projects.map(p => p.toJSON());
+}

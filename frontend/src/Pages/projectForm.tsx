@@ -95,7 +95,7 @@ const ProjectForm = () => {
                 maxMembers,
                 securityKey
             }, token);
-            navigate("/project-list");
+            navigate("/projects");
         } catch (err: any) {
             setError(err.message || "Erreur lors de la création du projet.");
         } finally {

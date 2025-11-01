@@ -1,6 +1,6 @@
 import {Router, Request, Response} from "express";
 import jwt from "jsonwebtoken";
-import {listOrganisations, createProject} from "../services/projectServices";
+import {listOrganisations, createProject, listProjects, getNextProjectId} from "../services/projectServices";
 import crypto from "crypto";
 import { Project } from "../models/Project";
 const router = Router();
@@ -11,13 +11,13 @@ const JWT_SECRET = process.env.JWT_SECRET || "your_json_web_token_secret_key";
 router.get('/organisations', async (req, res) => {
     const authHeader = req.headers['authorization'];
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ success: false, message: 'Token manquant ou mal formé' });
+        return res.status(401).json({ success: false, message: 'Token missing or malformed' });
     }
     const token = authHeader.split(' ')[1];
     try {
         jwt.verify(token, JWT_SECRET);
     } catch (err) {
-        return res.status(401).json({ success: false, message: 'Token invalide ou expiré' });
+        return res.status(401).json({ success: false, message: 'Invalid or expired token' });
     }
     try {
         const organisations = await listOrganisations();
@@ -31,33 +31,33 @@ router.get('/organisations', async (req, res) => {
 router.post('/', async (req, res) => {
     const authHeader = req.headers['authorization'];
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ success: false, message: 'Token manquant ou mal formé' });
+        return res.status(401).json({ success: false, message: 'Token missing or malformed' });
     }
     const token = authHeader.split(' ')[1];
     try {
         jwt.verify(token, JWT_SECRET);
     } catch (err) {
-        return res.status(401).json({ success: false, message: 'Token invalide ou expiré' });
+        return res.status(401).json({ success: false, message: 'Invalid or expired token' });
     }
     const { id, name, organizationName, githubUrl, minMembers, maxMembers, securityKey } = req.body;
     if (!name || !organizationName || !githubUrl || !minMembers || !maxMembers || !securityKey) {
-        return res.status(400).json({ success: false, message: 'Champs manquants' });
+        return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
-    // Validation stricte des membres
+    // Strict validation for members
     if (!Number.isInteger(minMembers) || minMembers < 1) {
-        return res.status(400).json({ success: false, message: 'Le nombre minimum de membres doit être un entier positif (>= 1).' });
+        return res.status(400).json({ success: false, message: 'Minimum members must be a positive integer (>= 1).' });
     }
     if (!Number.isInteger(maxMembers) || maxMembers < 1) {
-        return res.status(400).json({ success: false, message: 'Le nombre maximum de membres doit être un entier positif (>= 1).' });
+        return res.status(400).json({ success: false, message: 'Maximum members must be a positive integer (>= 1).' });
     }
     if (maxMembers < minMembers) {
-        return res.status(400).json({ success: false, message: 'Le nombre maximum de membres doit être supérieur ou égal au minimum.' });
+        return res.status(400).json({ success: false, message: 'Maximum members must be greater than or equal to minimum.' });
     }
     try {
-        // Génère le pattern automatiquement : NomProjet##
+        // Generate pattern automatically: ProjectName##
         const repoPattern = `${name}##`;
         const project = await createProject({
-            id, // peut être undefined
+            id, // can be undefined
             name,
             organizationName,
             githubUrl,
@@ -66,7 +66,7 @@ router.post('/', async (req, res) => {
             repoPattern,
             securityKey
         });
-        // Retourne toutes les infos utiles, y compris le lien d'invitation
+        // Return all useful info, including the invitation link
         return res.status(201).json({
             success: true,
             project: {
@@ -83,33 +83,33 @@ router.post('/', async (req, res) => {
         });
     } catch (err: any) {
         if (err.status === 409) {
-            return res.status(409).json({ success: false, message: 'Un projet avec cet id existe déjà. Veuillez rafraîchir le formulaire.' });
+            return res.status(409).json({ success: false, message: 'A project with this id already exists. Please refresh the form.' });
         }
-        return res.status(500).json({ success: false, message: err.message || 'Erreur lors de la création du projet' });
+        return res.status(500).json({ success: false, message: err.message || 'Error while creating the project' });
     }
 });
 
 router.get('/projects/:id', async (req, res) => {
     const authHeader = req.headers['authorization'];
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ success: false, message: 'Token manquant ou mal formé' });
+        return res.status(401).json({ success: false, message: 'Token missing or malformed' });
     }
     const token = authHeader.split(' ')[1];
     try {
         jwt.verify(token, JWT_SECRET);
     } catch (err) {
-        return res.status(401).json({ success: false, message: 'Token invalide ou expiré' });
+        return res.status(401).json({ success: false, message: 'Invalid or expired token' });
     }
     const projectId = Number(req.params.id);
     if (!projectId) {
-        return res.status(400).json({ success: false, message: 'Id de projet manquant ou invalide' });
+        return res.status(400).json({ success: false, message: 'Missing or invalid project id' });
     }
     try {
         const project = await Project.findByPk(projectId);
         if (!project) {
-            return res.status(404).json({ success: false, message: 'Projet non trouvé' });
+            return res.status(404).json({ success: false, message: 'Project not found' });
         }
-        // Génère le lien d'invitation à partir des données du projet
+        // Generate invitation link from project data
         const inviteLink = `/studentAdd/${project.id}/${project.securityKey}`;
         return res.status(200).json({
             success: true,
@@ -126,19 +126,37 @@ router.get('/projects/:id', async (req, res) => {
             }
         });
     } catch (err) {
-        return res.status(500).json({ success: false, message: err || 'Erreur lors de la récupération du projet' });
+        return res.status(500).json({ success: false, message: err || 'Error while retrieving the project' });
     }
 });
 
 router.get('/next-id', async (req, res) => {
     try {
-        const lastProject = await Project.findOne({
-            order: [['id', 'DESC']]
-        });
-        const nextId = lastProject ? lastProject.id + 1 : 1;
+        const nextId = await  getNextProjectId();
         return res.status(200).json({ success: true, nextId });
     } catch (err) {
-        return res.status(500).json({ success: false, message: err || 'Erreur lors de la récupération du prochain id' });
+        return res.status(500).json({ success: false, message: err || 'Error while retrieving the next id' });
+    }
+});
+router.get('/list', async (req, res) => {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ success: false, message: 'Token missing or malformed' });
+    }
+    const token = authHeader.split(' ')[1];
+    try {
+        jwt.verify(token, JWT_SECRET);
+    } catch (err) {
+        return res.status(401).json({ success: false, message: 'Invalid or expired token' });
+    }
+    try {
+        const projectList = await listProjects();
+        if (!projectList || projectList.length === 0) {
+            return res.status(200).json({ success: true, projects: [], message: 'No project found.' });
+        }
+        return res.status(200).json({ success: true, projects: projectList });
+    } catch (err: any) {
+        return res.status(500).json({ success: false, message: err.message || "Error while retrieving projects" });
     }
 });
 export default router;

@@ -1,8 +1,9 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo, HasMany } from "sequelize-typescript";
+import {Table, Column, Model, DataType, ForeignKey, BelongsTo, HasMany, Unique} from "sequelize-typescript";
 import { Project } from "./Project";
 import { Student } from "./Student";
 
 @Table({
+
     tableName: "groups",
     timestamps: false,
 })
@@ -28,6 +29,13 @@ export class Group extends Model {
         field: "project_id",
     })
     declare projectId: number;
+
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+        field: "group_number",
+    })
+    declare groupNumber: number;
 
     @BelongsTo(() => Project)
     declare project: Project;

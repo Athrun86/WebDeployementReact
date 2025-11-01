@@ -4,6 +4,8 @@ import { Users } from '../models/User';
 import { hashSync } from 'bcrypt';
 import * as readline from 'readline';
 import { Project } from '../models/Project';
+import { Group} from  '../models/Group';
+import { Student } from '../models/Student';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
@@ -122,7 +124,7 @@ function SequelizeConnection(username: string, password: string, port: number, h
         host,
         dialect: 'mariadb',
         port,
-        models: [Users, Project],
+        models: [Users, Project, Group, Student],
     });
 }
 
