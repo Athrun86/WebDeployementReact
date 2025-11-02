@@ -1,5 +1,6 @@
 import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from "sequelize-typescript";
 import { Group } from "./Group";
+import {Project} from "./Project";
 
 @Table({
     tableName: "students",
@@ -32,9 +33,21 @@ export class Student extends Model {
         allowNull: false,
         field: "group_id",
     })
-    declare groupId: number;
-
     @BelongsTo(() => Group)
     declare group: Group;
+    declare groupId: number;
+    @ForeignKey(() => Project)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+        field: "project_id",
+    })
+    declare projectId: number;
+    @BelongsTo(() => Project)
+    declare project: Project;
+
+
+
+
 }
 

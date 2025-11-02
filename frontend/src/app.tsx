@@ -48,7 +48,7 @@ function AppContent() {
             <Route path="/" element={<ProjectListPage />} />
             <Route path="/projects" element={<ProjectListPage />} />
             <Route path="/CreateProject" element={<ProjectForm />} />
-            <Route path="/AddStudent" element={<StudentAdd />} />
+            <Route path="/AddStudent/:projectId/:securityKey" element={<StudentAdd />} />
         </Routes>
     );
 }

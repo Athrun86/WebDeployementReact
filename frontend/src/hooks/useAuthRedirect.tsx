@@ -1,14 +1,16 @@
 import { useEffect } from 'react';
 import { useAtom } from 'jotai';
-import { useNavigate } from 'react-router-dom';
+import {matchPath, useNavigate} from 'react-router-dom';
 import { tokenAtom } from '../utils/tokenAtom';
 import { isTokenExpired, getTokenExpMs } from '../utils/jwt';
 
 export function useAuthRedirect() {
   const [token, setToken] = useAtom(tokenAtom);
   const navigate = useNavigate();
+  const isAddStudent = matchPath("/AddStudent/:projectId/:securityKey", location.pathname);
 
   useEffect(() => {
+    if (isAddStudent)  return ;
     if (!token) {
       navigate('/login', { replace: true });
       return;
