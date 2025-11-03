@@ -3,9 +3,8 @@ import "../style/_shared.scss"
 import "../style/projectTemplate.scss"
 type Project = {
     id: number;
-    title: string;
-    groupNumber: number;
-    description?: string;
+    name: string;
+    organisationName?: string;
 };
 type Props = {
     projects: Project[];
@@ -26,8 +25,8 @@ const ProjectTemplate: React.FC<Props> = ({
         <div className="project-list" >
             {projects.map((project) => (
                 <div className="project-item" onClick={onEdit ? () => onEdit(project.id) : undefined}  key={project.id}>
-                    <h2>{project.title}</h2>
-                    {project.description && <p>{project.description}</p>}
+                    <h2>{project.name}</h2>
+                    {project.organisationName && <p>{project.organisationName}</p>}
                 </div>
             ))}
                 </div>

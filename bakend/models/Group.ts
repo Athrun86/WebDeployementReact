@@ -6,6 +6,10 @@ import { Student } from "./Student";
 
     tableName: "groups",
     timestamps: false,
+    indexes: [
+        { unique: true, fields: ["project_id", "group_number"] },
+        { unique: true, fields: ["project_id", "name"] },
+    ],
 })
 export class Group extends Model {
     @Column({
@@ -18,7 +22,7 @@ export class Group extends Model {
     @Column({
         type: DataType.STRING,
         allowNull: false,
-        unique: true,
+        // unique supprimé pour qu'un même nom de groupe puisse exister dans des projets différents
     })
     declare name: string;
 
@@ -43,4 +47,3 @@ export class Group extends Model {
     @HasMany(() => Student)
     declare students: Student[];
 }
-

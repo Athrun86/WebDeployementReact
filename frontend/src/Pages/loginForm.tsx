@@ -42,6 +42,7 @@ type LoginFormProps = {
                             <label htmlFor="username">ACCESS ID</label>
                             <input
                                 id="username"
+                                name="username"
                                 type="username"
                                 placeholder="Enter your access ID"
                                 autoComplete="username"
