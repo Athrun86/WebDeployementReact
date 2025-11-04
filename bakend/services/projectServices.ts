@@ -72,6 +72,13 @@ export async function createProject({
             throw err;
         }
     }
+    // Vérifier si l'organisation est déjà prise par un autre projet
+    const orgExists = await Project.findOne({ where: { organizationName } });
+    if (orgExists) {
+        const err: any = new Error('This organization is already used by another project.');
+        err.status = 410;
+        throw err;
+    }
     // Création du projet en base, avec id fourni si présent
     const project = await Project.create({
         ...(id ? { id } : {}),
@@ -91,9 +98,59 @@ export async function getNextProjectId() {
     });
     return maxProject ? maxProject.id + 1 : 1;
 }
+
 export async function listProjects() {
     const projects = await Project.findAll({
         attributes: ['id', 'name', 'organizationName']
     });
     return projects.map(p => p.toJSON());
+}
+export async function modifyProject({
+    id,
+    name,
+    organizationName,
+    githubUrl,
+    minMembers,
+    maxMembers,
+    repoPattern,
+    securityKey
+}: {
+    id: number,
+    name: string,
+    organizationName: string,
+    githubUrl: string,
+    minMembers: number,
+    maxMembers: number,
+    repoPattern: string,
+    securityKey: string
+}) {
+    // Vérifier que le projet existe
+    const project = await Project.findByPk(id);
+    if (!project) {
+        const err: any = new Error('Project not found');
+        err.status = 404;
+        throw err;
+    }
+    // Vérifier si l'organisation est déjà prise par un autre projet
+    const orgExists = await Project.findOne({
+        where: {
+            organizationName,
+            id: { [require('sequelize').Op.ne]: id }
+        }
+    });
+    if (orgExists) {
+        const err: any = new Error('This organization is already used by another project.');
+        err.status = 410;
+        throw err;
+    }
+    // Mise à jour des champs
+    project.name = name;
+    project.organizationName = organizationName;
+    project.githubUrl = githubUrl;
+    project.minMembers = minMembers;
+    project.maxMembers = maxMembers;
+    project.repoPattern = repoPattern;
+    project.securityKey = securityKey;
+    await project.save();
+    return project;
 }

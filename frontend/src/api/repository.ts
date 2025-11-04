@@ -32,18 +32,35 @@ export async function requestNextProjectId(token: string): Promise<number> {
     return resp.data.nextId;
 }
 
+function getProjectErrorMessage(err: any) {
+    if (err.response) {
+        if (err.response.status === 409) {
+            return 'ID déjà pris. Veuillez rafraîchir le formulaire.';
+        }
+        if (err.response.status === 410) {
+            return 'This organization is already used by another project.';
+        }
+        if (err.response.status === 400) {
+            return err.response.data?.message || 'Champs manquants ou invalides.';
+        }
+        if (err.response.status === 401) {
+            return 'Authentification requise ou expirée.';
+        }
+        if (err.response.status === 500) {
+            return 'Erreur serveur. Veuillez réessayer plus tard.';
+        }
+    }
+    return err.message || 'Erreur inconnue.';
+}
+
 export async function createProject(data: any, token: string) {
-    // data doit contenir id, securityKey, et autres champs nécessaires
     try {
         const resp = await axios.post(apiUrl + '/projects', data, {
             headers: { authorization: `Bearer ${token}` }
         });
         return resp.data;
     } catch (err: any) {
-        if (err.response && err.response.status === 409) {
-            throw new Error('ID déjà pris. Veuillez rafraîchir le formulaire.');
-        }
-        throw err;
+        throw new Error(getProjectErrorMessage(err));
     }
 }
 export async function requestProjects(token: string)
@@ -59,4 +76,21 @@ export async function requestProjects(token: string)
 
     }
 
+}
+export async function getProjectById(id: number, token: string) {
+    const resp = await axios.get(`${apiUrl}/projects/${id}`, {
+        headers: { authorization: `Bearer ${token}` }
+    });
+    return resp.data.project;
+}
+
+export async function updateProject(id: number, data: any, token: string) {
+    try {
+        const resp = await axios.put(`${apiUrl}/projects/${id}`, data, {
+            headers: { authorization: `Bearer ${token}` }
+        });
+        return resp.data;
+    } catch (err: any) {
+        throw new Error(getProjectErrorMessage(err));
+    }
 }

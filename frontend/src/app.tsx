@@ -11,6 +11,8 @@ import StudentAdd from './Pages/studentAdd.tsx';
 import { useAtom } from 'jotai';
 import {tokenAtom} from "./utils/tokenAtom.ts";
 import { useAuthRedirect } from './hooks/useAuthRedirect';
+import { ProjectListProvider } from './contexts/ProjectListContext.tsx';
+import { ProjectFormProvider } from './contexts/ProjectFormContext.tsx';
 
 
 function AppContent() {
@@ -45,9 +47,26 @@ function AppContent() {
 
     return (
         <Routes>
-            <Route path="/" element={<ProjectListPage />} />
-            <Route path="/projects" element={<ProjectListPage />} />
-            <Route path="/CreateProject" element={<ProjectForm />} />
+            <Route path="/" element={
+                <ProjectListProvider>
+                    <ProjectListPage />
+                </ProjectListProvider>
+            } />
+            <Route path="/projects" element={
+                <ProjectListProvider>
+                    <ProjectListPage />
+                </ProjectListProvider>
+            } />
+            <Route path="/CreateProject" element={
+                <ProjectFormProvider>
+                    <ProjectForm />
+                </ProjectFormProvider>
+            } />
+            <Route path="/editProject/:id" element={
+                <ProjectFormProvider>
+                    <ProjectForm />
+                </ProjectFormProvider>
+            } />
             <Route path="/AddStudent/:projectId/:securityKey" element={<StudentAdd />} />
         </Routes>
     );

@@ -1,46 +1,17 @@
-import { useEffect, useState } from "react";
+
 import ProjectTemplate from "../Components/projectTemplate.tsx";
 import "../style/_shared.scss";
 import { useNavigate } from "react-router-dom";
-import { requestProjects } from "../api/repository.ts";
-import { useAtom } from "jotai";
-import { tokenAtom } from "../utils/tokenAtom.ts";
-
+import { useProjectList } from "../contexts/ProjectListContext.tsx";
 
 const ProjectListPage = () => {
-    const [projects, setProjects] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [tokenAtomValue] = useAtom(tokenAtom);
-    const token: string | null = tokenAtomValue ?? null;
+    const { projects, loading, error } = useProjectList();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchProjects = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                if (!token) throw new Error("Token manquant");
-                const apiProjects = await requestProjects(token);
-                // Mapping pour ProjectTemplate
-                const mapped = apiProjects.map((p: any) => ({
-                    id: p.id,
-                    name: p.name,
-                    organisationName: p.organisationName // organisation GitHub
-                }));
-                setProjects(mapped);
-            } catch (e: any) {
-                setError(e.message || "Erreur lors du chargement des projets");
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchProjects();
-    }, [token]);
-
     const handleEdit = (id: number) => {
-        alert('Modify project with ID: ' + id);
+        navigate(`/editProject/${id}`);
     };
+
     const handleAddProject = () => {
         navigate('/CreateProject');
     };
@@ -70,4 +41,5 @@ const ProjectListPage = () => {
         </div>
     );
 };
+
 export default ProjectListPage;
