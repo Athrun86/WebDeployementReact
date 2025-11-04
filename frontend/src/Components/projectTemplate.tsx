@@ -4,7 +4,7 @@ import "../style/projectTemplate.scss"
 type Project = {
     id: number;
     name: string;
-    organisationName?: string;
+    organizationName?: string;
 };
 type Props = {
     projects: Project[];
@@ -26,7 +26,7 @@ const ProjectTemplate: React.FC<Props> = ({
             {projects.map((project) => (
                 <div className="project-item" onClick={onEdit ? () => onEdit(project.id) : undefined}  key={project.id}>
                     <h2>{project.name}</h2>
-                    {project.organisationName && <p>{project.organisationName}</p>}
+                    {project.organizationName && <p>{project.organizationName}</p>}
                 </div>
             ))}
                 </div>

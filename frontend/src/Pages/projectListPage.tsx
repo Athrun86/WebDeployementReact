@@ -25,9 +25,8 @@ const ProjectListPage = () => {
                 // Mapping pour ProjectTemplate
                 const mapped = apiProjects.map((p: any) => ({
                     id: p.id,
-                    title: p.name,
-                    groupNumber: 1, // à adapter si besoin
-                    description: p.organizationName // organisation GitHub
+                    name: p.name,
+                    organisationName: p.organisationName // organisation GitHub
                 }));
                 setProjects(mapped);
             } catch (e: any) {

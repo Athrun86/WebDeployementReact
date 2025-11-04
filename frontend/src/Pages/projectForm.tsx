@@ -5,7 +5,7 @@ import "../style/_shared.scss";
 import "../style/projectForm.scss";
 import CopyButton from "../Components/copyButton.tsx";
 import OrganisationSelect from "../Components/organisationSelect.tsx";
-import {requestOrganisations, requestNextProjectId, createProject} from "../api/repository.ts";
+import {requestOrganizations, requestNextProjectId, createProject} from "../api/repository.ts";
 import {useAtom} from "jotai";
 import {tokenAtom} from "../utils/tokenAtom.ts";
 import { useNavigate } from "react-router-dom";
@@ -22,8 +22,8 @@ const ProjectForm = () => {
     const [maxMembers, setMaxMembers] = useState<number | undefined>();
     const [tokenAtomValue] = useAtom(tokenAtom);
     const token: string | null = tokenAtomValue ?? null;
-    const [organisations, setOrganisations] = useState<any[]>([]);
-    const [selectedOrganisationId, setSelectedOrganisationId] = useState<number | undefined>();
+    const [organizations, setOrganizations] = useState<any[]>([]);
+    const [selectedOrganizationId, setSelectedOrganizationId] = useState<number | undefined>();
     const [nextProjectId, setNextProjectId] = useState<number | null>(null);
     const [securityKey] = useState(() => generateSecurityKey());
     const navigate = useNavigate();
@@ -31,16 +31,16 @@ const ProjectForm = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        async function fetchOrganisations() {
+        async function fetchOrganizations() {
             if (!token) return;
             try {
-                const orgs = await requestOrganisations(token);
-                setOrganisations(orgs);
+                const orgs = await requestOrganizations(token);
+                setOrganizations(orgs);
             } catch (e) {
-                console.error("Erreur récupération organisations dans composant:", e);
+                console.error("Erreur récupération organizations dans composant:", e);
             }
         }
-        if (token) fetchOrganisations();
+        if (token) fetchOrganizations();
     }, [token]);
 
     useEffect(() => {
@@ -65,7 +65,7 @@ const ProjectForm = () => {
             setLoading(false);
             return;
         }
-        if (!nextProjectId || !securityKey || !projectName || !selectedOrganisationId || minMembers === undefined || maxMembers === undefined) {
+        if (!nextProjectId || !securityKey || !projectName || !selectedOrganizationId || minMembers === undefined || maxMembers === undefined) {
             setError("Tous les champs sont obligatoires.");
             setLoading(false);
             return;
@@ -89,8 +89,8 @@ const ProjectForm = () => {
             await createProject({
                 id: nextProjectId,
                 name: projectName,
-                organizationName: organisations.find(o => o.id === selectedOrganisationId)?.login || '',
-                githubUrl: organisations.find(o => o.id === selectedOrganisationId)?.url || '',
+                organizationName: organizations.find(o => o.id === selectedOrganizationId)?.login || '',
+                githubUrl: organizations.find(o => o.id === selectedOrganizationId)?.url || '',
                 minMembers,
                 maxMembers,
                 securityKey
@@ -127,9 +127,9 @@ const ProjectForm = () => {
                         <div className="project-form-input-row">
                             <label htmlFor="OrganisationSelect">Organisation</label>
                             <OrganisationSelect
-                                organisations={organisations}
-                                value={selectedOrganisationId}
-                                onChange={setSelectedOrganisationId}
+                                organisations={organizations}
+                                value={selectedOrganizationId}
+                                onChange={setSelectedOrganizationId}
                             />
                         </div>
                         <div className="member-row">

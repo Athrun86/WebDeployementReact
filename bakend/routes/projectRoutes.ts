@@ -116,7 +116,7 @@ router.get('/projects/:id', async (req, res) => {
             project: {
                 id: project.id,
                 name: project.name,
-                organizationName: project.organizationName,
+                organisationName: project.organizationName,
                 githubUrl: project.githubUrl,
                 minMembers: project.minMembers,
                 maxMembers: project.maxMembers,

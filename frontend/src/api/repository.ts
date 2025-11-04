@@ -14,7 +14,7 @@ export async function requestvalidationToken(token: string): Promise<boolean> {
     }
 }
 
-export async function requestOrganisations(token: string): Promise<any[]> {
+export async function requestOrganizations(token: string): Promise<any[]> {
     try {
         const resp = await axios.get(apiUrl + '/projects/organisations', {
             headers: { authorization: `Bearer ${token}` }
@@ -49,7 +49,7 @@ export async function createProject(data: any, token: string) {
 export async function requestProjects(token: string)
 {
     try {
-        const resp = await axios.get(apiUrl + 'projects/list', {
+        const resp = await axios.get(apiUrl + '/projects/list', {
             headers: { authorization: `Bearer ${token}` }
         });
         return resp.data.projects;
