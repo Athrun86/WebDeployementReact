@@ -1,6 +1,4 @@
-// typescript
 // File: `frontend/src/app.tsx`
-
 
 import LoginForm from './Pages/loginForm.tsx';
 import ProjectListPage from './Pages/projectListPage.tsx';
@@ -15,17 +13,20 @@ import { ProjectFormProvider } from './contexts/ProjectFormContext.tsx';
 import { StudentAddProvider } from './contexts/StudentAddContext.tsx';
 import { AuthProvider } from './contexts/AuthContext.tsx';
 
+/**
+ * Main application content component.
+ * Handles routing and conditional rendering based on authentication state.
+ */
 function AppContent() {
+    // Retrieve the authentication token using Jotai's atom state management
     const [token] = useAtom(tokenAtom);
 
-    // Vérification automatique du token et gestion de l'expiration
+    // Automatically checks the token and redirects if expired or invalid
     useAuthRedirect();
 
     return (
         <Routes>
-            {/* Route de debug temporaire */}
-
-            {/* Route publique pour l'ajout d'étudiants - accessible sans token */}
+            {/* Public route for adding students - accessible without authentication */}
             <Route
                 path="/studentAdd/:projectId/:securityKey"
                 element={
@@ -35,9 +36,10 @@ function AppContent() {
                 }
             />
 
-            {/* Routes authentifiées */}
+            {/* Authenticated routes */}
             {token ? (
                 <>
+                    {/* Route for the project list page */}
                     <Route path="/" element={
                         <ProjectListProvider>
                             <ProjectListPage />
@@ -48,11 +50,13 @@ function AppContent() {
                             <ProjectListPage />
                         </ProjectListProvider>
                     } />
+                    {/* Route for creating a new project */}
                     <Route path="/CreateProject" element={
                         <ProjectFormProvider>
                             <ProjectForm />
                         </ProjectFormProvider>
                     } />
+                    {/* Route for editing an existing project */}
                     <Route path="/editProject/:id" element={
                         <ProjectFormProvider>
                             <ProjectForm />
@@ -60,7 +64,7 @@ function AppContent() {
                     } />
                 </>
             ) : (
-                /* Routes non authentifiées - afficher le login pour toutes les autres routes */
+                // Non-authenticated routes - redirects to the login form for all other paths
                 <Route path="*" element={
                     <AuthProvider>
                         <LoginForm />
@@ -71,6 +75,10 @@ function AppContent() {
     );
 }
 
+/**
+ * Main application component.
+ * Wraps the application content with the `BrowserRouter` for routing.
+ */
 export default function App() {
     return (
         <BrowserRouter>

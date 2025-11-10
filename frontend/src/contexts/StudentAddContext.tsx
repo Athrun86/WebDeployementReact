@@ -12,6 +12,8 @@ interface Student {
 interface ProjectInfo {
     title: string;
     organization: string;
+    minMembers: number;
+    maxMembers: number;
 }
 
 interface StudentAddContextType {
@@ -44,8 +46,15 @@ export const StudentAddProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const [projectInfo, setProjectInfo] = useState<ProjectInfo | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const maxStudents = 6; // Maximum de membres par groupe
-    const minStudents = 3; // Minimum de membres par groupe
+
+    const maxStudents = projectInfo?.maxMembers;
+    if (!maxStudents) {
+        throw new Error('Max students information is missing from project info');
+    }
+    const minStudents = projectInfo?.minMembers ;
+    if (!minStudents) {
+        throw new Error('Min students information is missing from project info');
+    }
 
     // Fonction pour ajouter une nouvelle ligne d'étudiant
     const addStudentRow = () => {
@@ -153,7 +162,9 @@ export const StudentAddProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                         console.log('✅ Valid project data received');
                         setProjectInfo({
                             title: result.data.title,
-                            organization: result.data.organization
+                            organization: result.data.organization,
+                            minMembers: result.data.minMembers,
+                            maxMembers: result.data.maxMembers,
                         });
                         console.log(`📊 Project: ${result.data.title} (${result.data.organization})`);
                     } else {
@@ -161,7 +172,9 @@ export const StudentAddProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                         console.log(`❌ Invalid project response: ${errorMessage}`);
                         setProjectInfo({
                             title: "Projet invalide",
-                            organization: errorMessage
+                            organization: errorMessage,
+                            minMembers: 0,
+                            maxMembers: 0
                         });
                         setError(errorMessage);
                     }
@@ -189,7 +202,9 @@ export const StudentAddProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
                     setProjectInfo({
                         title: "Erreur de connexion",
-                        organization: errorMessage
+                        organization: errorMessage,
+                        minMembers: 0,
+                        maxMembers: 0
                     });
                     setError(errorMessage);
                 } finally {
@@ -208,8 +223,8 @@ export const StudentAddProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const value: StudentAddContextType = {
         students,
         projectInfo,
-        maxStudents,
-        minStudents,
+        maxStudents: maxStudents,
+        minStudents: minStudents,
         loading,
         error,
         handleStudentNameChange,

@@ -4,6 +4,7 @@ import { Project } from '../models/Project';
 import { Users } from '../models/User';
 import { decryptToken } from "../utils/crypto";
 import { Octokit } from "@octokit/rest";
+import {errorMessage} from "napi-postinstall/lib/helpers";
 
 /**
  * Service for managing groups and their validation
@@ -45,7 +46,9 @@ export class GroupService {
                 data: {
                     id: project.id,
                     title: project.name,  // Correction: using 'name' column instead of 'title'
-                    organization: project.organizationName  // Correction: using 'organization_name' column
+                    organization: project.organizationName ,// Correction: using 'organization_name' column
+                    minMembers: project.minMembers,
+                    maxMembers: project.maxMembers,
                 }
             };
         } catch (error) {
