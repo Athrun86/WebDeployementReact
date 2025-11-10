@@ -4,7 +4,7 @@
 import { Users } from '../models/User';
 import { hashSync, compareSync } from 'bcrypt';
 import { sequelize } from "../db/sequelizeInstance"
-import { Octokit } from "octokit";
+
 
 import { decryptToken} from "../utils/crypto";
 
@@ -19,6 +19,7 @@ export  async function checkLogin (username: string, password: string)
     if (!token) return false;
     try {
         const decryptedToken = decryptToken(token);
+        const { Octokit } = await import("octokit");
         const octokit = new Octokit({auth: decryptedToken});
         const resp = await octokit.request('GET /user');
         return  resp.status === 200 ;
