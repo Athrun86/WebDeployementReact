@@ -3,7 +3,15 @@ import app from './app';
 import { sequelize } from './db/sequelizeInstance';
 import { initRailwayDatabase, testRailwayConnection, createRailwayUser } from './deployment/databasedeployement';
 
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt( process.env.PORT || '3000', 10);
+app.get('/', (req, res) => {
+    console.log('📋 Healthcheck appelé');
+    res.status(200).json({
+        status: 'OK',
+        timestamp: new Date().toISOString(),
+        env: process.env.NODE_ENV
+    });
+});
 
 async function startServer() {
     try {
@@ -33,13 +41,20 @@ async function startServer() {
             await sequelize.authenticate();
         }
 
-        app.listen(PORT, () => {
-            console.log(`🚀 Server launched on port ${PORT}`);
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log(`🚀 Serveur démarré sur le port ${PORT}`);
+            console.log(`📊 Environment: ${process.env.NODE_ENV}`);
+            console.log(`🔗 Database URL: ${process.env.DATABASE_URL ? 'Configuré' : 'MANQUANT'}`);
         });
+
+
     } catch (error) {
         console.error('❌ Launch server error:', error);
-        process.exit(1);
+        if (process.env.NODE_ENV !== 'production') {
+            process.exit(1);
+        }
+
     }
-}
+}// Dans votre server.ts
 
 startServer();
