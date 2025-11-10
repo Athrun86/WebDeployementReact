@@ -4,7 +4,8 @@
 import { Users } from '../models/User';
 import { hashSync, compareSync } from 'bcrypt';
 import { sequelize } from "../db/sequelizeInstance"
-import {Octokit} from 'octokit';
+import { Octokit } from "octokit";
+
 import { decryptToken} from "../utils/crypto";
 
 
