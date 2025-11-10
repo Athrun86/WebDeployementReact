@@ -3,8 +3,9 @@ import { GroupController } from '../controllers/groupController';
 import {validate, validateParams, validateQuery} from "../middleware/validation";
 import {
     groupSchema,
-   studentSchema,
-    projectSchema
+    projectInfoQuerySchema,
+    projectSchema,
+    projectIdAndKeySchema
 } from "../validators/shema";
 
 /**
@@ -19,7 +20,7 @@ const groupController = new GroupController();
  * Retrieves project information and validates access credentials
  */
 router.get('/project/:projectId/:securityKey',
-    validateQuery(projectSchema),
+    validateParams(projectIdAndKeySchema),
     groupController.getProjectInfo);
 
 /**

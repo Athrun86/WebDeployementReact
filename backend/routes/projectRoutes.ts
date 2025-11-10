@@ -22,6 +22,8 @@ router.get('/:id',
     validateParams(projectIdSchema),
     ProjectController.getProjectById);
 router.put('/:id',
+    validateParams(projectIdSchema),
+    validate(projectSchema),
 
     ProjectController.updateProject);
 

@@ -254,7 +254,7 @@ export class GroupService {
             console.error('Error creating GitHub repository:', error);
             return {
                 success: false,
-                message: error.message || "Unknown error occurred"
+                message:  " error occurred creating group"
             };
         }
     }

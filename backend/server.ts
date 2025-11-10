@@ -1,5 +1,5 @@
 import app from './app';
-import { testConnection } from './db/database';
+//import { testConnection } from './db/database';
 import { sequelize } from './db/sequelizeInstance';
 import { initRailwayDatabase, testRailwayConnection, createRailwayUser } from './deployment/databasedeployement';
 
@@ -29,7 +29,7 @@ async function startServer() {
         } else {
             // Développement local
             console.log('🏠 Local startup detected. Testing local database connection...');
-            await testConnection();
+          //  await testConnection();
             await sequelize.authenticate();
         }
 
