@@ -1,5 +1,5 @@
 import {Users } from '../models/User';
-import {Octokit} from "octokit";
+import {Octokit} from "@octokit/rest";
 import {decryptToken} from "../utils/crypto";
 import {components} from "@octokit/openapi-types";
 import {NextFunction} from "connect";
