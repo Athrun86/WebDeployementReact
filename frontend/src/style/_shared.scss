@@ -135,3 +135,115 @@ label {
 
   padding: 2rem 0;
 }
+
+/* Styles pour la page StudentAdd */
+.student-row {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    align-items: center;
+    padding-right: 1rem; /* Garde un espace à droite pour voir les coins */
+}
+
+.student-row .input-group {
+    flex: 1 1 0;
+   min-width: 0;
+}
+
+.student-row .input-group input {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.students-section {
+    margin: 2rem 0;
+}
+
+.students-section h4 {
+    color: #3395ff;
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+}
+
+.form-container {
+  padding-right: 1rem; /* Espace global à droite */
+  max-width: 100%;
+}
+
+.project-info {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+
+.project-info h3 {
+    color: #3395ff;
+    margin-bottom: 0.5rem;
+}
+
+.project-info p {
+    color: #fff;
+    margin: 0;
+}
+
+.error-message {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(255, 0, 0, 0.1);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.form-actions {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #3395ff, #1e7cd6);
+    color: white;
+    border: none;
+    padding: 0.875rem 2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 200px;
+}
+
+.submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(51, 149, 255, 0.4);
+}
+
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Responsive design */
+@media (max-width: 700px) {
+  .student-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .students-section h4 {
+    font-size: 1rem;
+  }
+
+  .submit-btn {
+    width: 100%;
+  }
+
+  .form-container {
+    padding-right: 0.5rem;
+  }
+}

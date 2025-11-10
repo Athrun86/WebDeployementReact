@@ -1,20 +1,17 @@
 import "react";
 import {useState} from "react";
+import { useAuth } from "../contexts/AuthContext";
 import "../style/loginForm.scss";
 import "../style/_shared.scss"
 
-
-type LoginFormProps = {
-    onLogin: (username: string, password: string) => void;
-
-}
- function LoginForm({onLogin}: LoginFormProps) {
+ function LoginForm() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const { handleLogin } = useAuth();
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        onLogin(username, password);
+        handleLogin(username, password);
     }
 
     return (

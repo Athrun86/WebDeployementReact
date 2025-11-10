@@ -6,7 +6,7 @@ import {Project} from "../models/Project";
 import { Group } from "../models/Group";
 import { Student } from "../models/Student";
 
-dotenv.config({path: path.join(__dirname, '.env') });
+dotenv.config({path: path.join(__dirname, '..', '.env') });
 
 console.log('DB_USER=', process.env.DB_USER, 'DB_HOST=', process.env.DB_HOST, 'DB_PORT=', process.env.DB_PORT);
 

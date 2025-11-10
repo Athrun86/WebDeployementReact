@@ -41,6 +41,13 @@ export class Group extends Model {
     })
     declare groupNumber: number;
 
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+        field: "github_repo_url",
+    })
+    declare github_repo_url: string;
+
     @BelongsTo(() => Project)
     declare project: Project;
 

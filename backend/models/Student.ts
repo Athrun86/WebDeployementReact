@@ -27,7 +27,7 @@ export class Student extends Model {
         allowNull: false,
         field: "github_username",
     })
-    declare githubUsername: string;
+    declare username: string;
 
     // cle et relation vers Group
     @ForeignKey(() => Group)
@@ -52,8 +52,5 @@ export class Student extends Model {
 
     @BelongsTo(() => Project)
     declare project: Project;
-
-
-
 
 }
