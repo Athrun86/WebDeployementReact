@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize-typescript';
+ import { Sequelize } from 'sequelize-typescript';
 import * as mariadb from 'mariadb';
 import { Users } from '../models/User';
 import { hashSync } from 'bcrypt';

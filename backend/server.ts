@@ -1,100 +1,45 @@
-import { Octokit } from "octokit";
-import dotenv from "dotenv";
-import app from "./app";
-import { sequelize, testConnection } from "./db/sequelizeInstance";
-import { initRailwayDatabase, closeRailwayDatabase } from './deployement/databasedeployement';
-import express from "express";
-import path from "path";
+import app from './app';
+import { testConnection } from './db/database';
+import { sequelize } from './db/sequelizeInstance';
+import { initRailwayDatabase, testRailwayConnection, createRailwayUser } from './deployment/databasedeployement';
 
-dotenv.config();
-
-const port = Number(process.env.PORT ?? 3000);
-
-/**
- * Initializes the database based on the environment
- * Uses Railway MySQL in production, MariaDB locally
- */
-async function initializeDatabase() {
-    if (process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT) {
-        console.log('🚂 Initializing Railway database...');
-        await initRailwayDatabase();
-        console.log('✅ Railway database initialized');
-    } else {
-        console.log('🏠 Initializing local MariaDB...');
-        await testConnection();
-        await sequelize.authenticate();
-        await sequelize.sync();
-        console.log('✅ Local database connected and synchronized');
-    }
-}
-
-/**
- * Closes database connections gracefully
- */
-async function closeDatabaseConnections() {
-    if (process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT) {
-        await closeRailwayDatabase();
-    } else {
-        await sequelize.close();
-    }
-}
+const PORT = process.env.PORT || 3000;
 
 async function startServer() {
     try {
-        // Initialize database
-        await initializeDatabase();
+        if (process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT) {
+            // Production Railway
+            console.log('RailWay environment detected. Initializing Railway database...');
 
-        // Serve static files in production
-        if (process.env.NODE_ENV === 'production') {
-            app.use(express.static(path.join(__dirname, '../frontend/build')));
+            await initRailwayDatabase();
+            const isConnected = await testRailwayConnection();
 
-            app.get('*', (req, res) => {
-                res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
-            });
-        }
-
-        // Health check endpoint
-        app.get('/health', (req, res) => {
-            res.json({
-                status: 'OK',
-                environment: process.env.NODE_ENV || 'development',
-                timestamp: new Date().toISOString()
-            });
-        });
-
-        const server = app.listen(port, '0.0.0.0', () => {
-            console.log(`🚀 Server is running on port ${port}`);
-            console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-        });
-
-        const shutdown = async () => {
-            console.log("🛑 Shutting down server...");
-            try {
-                await closeDatabaseConnections();
-                console.log("✅ Database connections closed");
-            } catch (e) {
-                console.error("❌ Error closing database connections:", e);
+            if (!isConnected) {
+                throw new Error('RailWay connection failed');
             }
 
-            server.close(() => {
-                console.log("✅ Server closed");
-                process.exit(0);
-            });
+            // Crée l'utilisateur admin si fourni via variables d'environnement
+            if (process.env.ADMIN_TOKEN && process.env.ADMIN_USERNAME && process.env.ADMIN_PASSWORD) {
+                await createRailwayUser(
+                    process.env.ADMIN_TOKEN,
+                    process.env.ADMIN_USERNAME,
+                    process.env.ADMIN_PASSWORD
+                );
+            }
+        } else {
+            // Développement local
+            console.log('🏠 Local startup detected. Testing local database connection...');
+            await testConnection();
+            await sequelize.authenticate();
+        }
 
-            setTimeout(() => {
-                console.log("❌ Forced shutdown");
-                process.exit(1);
-            }, 10000);
-        };
-
-        process.on("SIGINT", shutdown);
-        process.on("SIGTERM", shutdown);
-
-    } catch (err) {
-        console.error('❌ Startup error:', err);
+        app.listen(PORT, () => {
+            console.log(`🚀 Server launched on port ${PORT}`);
+        });
+    } catch (error) {
+        console.error('❌ Launch server error:', error);
         process.exit(1);
     }
 }
 
-console.log("🎯 Starting server...");
 startServer();
