@@ -1,7 +1,8 @@
 import { Users } from '../models/User';
 import { hashSync, compareSync } from 'bcrypt';
 import { sequelize } from "../db/sequelizeInstance";
-import { Octokit } from 'octokit';
+import { Octokit } from "@octokit/rest";
+
 import { decryptToken } from "../utils/crypto";
 
 export async function checkLogin(username: string, password: string) {
