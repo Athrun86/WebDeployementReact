@@ -29,7 +29,7 @@ function AppContent() {
         <Routes>
             {/* Public route for adding students - accessible without authentication */}
             <Route
-                path="/studentAdd/:projectId/:securityKey"
+                path="studentAdd/:projectId/:securityKey"
                 element={
                     <StudentAddProvider>
                         <StudentAdd />
