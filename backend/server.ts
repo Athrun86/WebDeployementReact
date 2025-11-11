@@ -1,8 +1,9 @@
 import app from './app';
 //import { testConnection } from './db/database';
 import { sequelize } from './db/sequelizeInstance';
+import cors from 'cors';
 import { initRailwayDatabase, testRailwayConnection, createRailwayUser } from './deployment/databasedeployement';
-
+const allowedOrigin = process.env.FRONTEND_URL
 const PORT = parseInt( process.env.PORT || '3000', 10);
 app.get('/', (req, res) => {
     console.log('📋 Healthcheck appelé');
@@ -46,8 +47,10 @@ async function startServer() {
             console.log(`📊 Environment: ${process.env.NODE_ENV}`);
             console.log(`🔗 Database URL: ${process.env.DATABASE_URL ? 'Configuré' : 'MANQUANT'}`);
         });
-
-
+        app.use(cors({
+            origin: allowedOrigin,
+            credentials: true,
+        }));
     } catch (error) {
         console.error('❌ Launch server error:', error);
         if (process.env.NODE_ENV !== 'production') {
