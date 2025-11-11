@@ -21,6 +21,7 @@ function AppContent() {
     // Retrieve the authentication token using Jotai's atom state management
     const [token] = useAtom(tokenAtom);
 
+
     // Automatically checks the token and redirects if expired or invalid
     useAuthRedirect();
 
@@ -80,8 +81,9 @@ function AppContent() {
  * Wraps the application content with the `BrowserRouter` for routing.
  */
 export default function App() {
+    const basename = import.meta.env.MODE === 'production' ? '/WebDeployementReact' : '';
     return (
-        <BrowserRouter basename="/WebDeployementReact">
+        <BrowserRouter basename={basename}>
             <AppContent />
         </BrowserRouter>
     );

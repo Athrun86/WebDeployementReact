@@ -77,7 +77,7 @@ les variables d'environnement nécessaires (voir exemples ci-dessus).
 pour Frontend:
 VITE_API_URL = votre URL backend Railway ou localhost si en local
 ###3. Lancer la base de données MySQL locale
-Assurez-vous d'avoir MySQL installé et en cours d'exécution sur votre machine locale.
+Assurez-vous d'avoir MariaDb installé et en cours d'exécution sur votre machine locale.
 lancez le script database.ts pour créer les tables nécessaires:
 Il vous sera demandé : 
 root et votre password mysql locale

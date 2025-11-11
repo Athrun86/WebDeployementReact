@@ -209,10 +209,14 @@ export const ProjectFormProvider: React.FC<ProjectFormProviderProps> = ({ childr
     };
 
     const generateInviteLink = (editId?: string): string => {
+        const baseUrl = import.meta.env.MODE==='production'
+            ? `${window.location.origin}/WebDeployementReact`
+            : window.location.origin;
+
         if (editId && projectLoaded) {
-            return `${window.location.origin}/studentAdd/${projectLoaded.id}/${projectLoaded.securityKey}`;
+            return `${baseUrl}/studentAdd/${projectLoaded.id}/${projectLoaded.securityKey}`;
         } else if (nextProjectId) {
-            return `${window.location.origin}/studentAdd/${nextProjectId}/${projectFormData.securityKey}`;
+            return `${baseUrl}/studentAdd/${nextProjectId}/${projectFormData.securityKey}`;
         }
         return '';
     };
