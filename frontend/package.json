@@ -1,14 +1,18 @@
 {
   "name": "react_project3",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "homepage": "https://Athrun86.github.io/WebDeployementReact",
   "type": "module",
   "scripts": {
     "dev": ".\\node_modules\\.bin\\vite",
     "build": "./node_modules/.bin/tsc -b && vite build",
     "lint": "./node_modules/.bin/eslint .",
     "preview": "./node_modules/.bin/vite preview",
-    "express": "node ../bakend/server.ts"
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+
+
   },
   "dependencies": {
     "@types/react-copy-to-clipboard": "^5.0.7",

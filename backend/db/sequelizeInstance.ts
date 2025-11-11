@@ -6,35 +6,55 @@ import {Project} from "../models/Project";
 import { Group } from "../models/Group";
 import { Student } from "../models/Student";
 
-dotenv.config({path: path.join(__dirname, '..', '.env') });
+// Charger dotenv seulement en développement
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config({path: path.join(__dirname, '..', '.env') });
+}
 
-console.log('DB_USER=', process.env.DB_USER, 'DB_HOST=', process.env.DB_HOST, 'DB_PORT=', process.env.DB_PORT);
+console.log('Environment:', process.env.NODE_ENV);
+console.log('MYSQL_URL exists:', !!process.env.MYSQL_URL);
+console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
+console.log('MYSQLHOST:', process.env.MYSQLHOST);
 
 // Configuration adaptée pour Railway
 const sequelizeConfig: any = {
     dialect: 'mysql',
     models: [Users, Project, Group, Student],
-    logging: console.log,
+    logging: process.env.NODE_ENV === 'production' ? false : console.log,
     pool: {
         max: 5,
         min: 0,
         acquire: 30000,
         idle: 10000
+    },
+    dialectOptions: {
+        connectTimeout: 60000,
+        acquireTimeout: 60000,
+        timeout: 60000,
     }
 };
 
-// Priorité aux variables Railway puis fallback sur les variables personnalisées
-if (process.env.MYSQL_URL || process.env.DATABASE_URL) {
-    // Utiliser l'URL de connexion Railway
-    const dbUrl = process.env.MYSQL_URL || process.env.DATABASE_URL;
-    sequelizeConfig.url = dbUrl;
+// Priorité aux variables Railway
+if (process.env.MYSQL_URL) {
+    console.log('Using MYSQL_URL connection');
+    sequelizeConfig.url = process.env.MYSQL_URL;
+} else if (process.env.DATABASE_URL) {
+    console.log('Using DATABASE_URL connection');
+    sequelizeConfig.url = process.env.DATABASE_URL;
 } else {
-    // Configuration manuelle
+    console.log('Using individual connection parameters');
     sequelizeConfig.host = process.env.MYSQLHOST || process.env.DB_HOST || 'localhost';
     sequelizeConfig.port = parseInt(process.env.MYSQLPORT || process.env.DB_PORT || '3306');
     sequelizeConfig.username = process.env.MYSQLUSER || process.env.DB_USER || 'root';
-    sequelizeConfig.password = process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || process.env.DB_PASS;
+    sequelizeConfig.password = process.env.MYSQLPASSWORD || process.env.DB_PASSWORD;
     sequelizeConfig.database = process.env.MYSQLDATABASE || process.env.DB_NAME || 'railway';
+
+    console.log('Connection config:', {
+        host: sequelizeConfig.host,
+        port: sequelizeConfig.port,
+        username: sequelizeConfig.username,
+        database: sequelizeConfig.database
+    });
 }
 
 export const sequelize = new Sequelize(sequelizeConfig);
