@@ -3,7 +3,7 @@
 import LoginForm from './Pages/loginForm.tsx';
 import ProjectListPage from './Pages/projectListPage.tsx';
 import ProjectForm from './Pages/projectForm.tsx';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import StudentAdd from './Pages/studentAdd.tsx';
 import { useAtom } from 'jotai';
 import { tokenAtom } from "./utils/tokenAtom.ts";
@@ -81,10 +81,9 @@ function AppContent() {
  * Wraps the application content with the `BrowserRouter` for routing.
  */
 export default function App() {
-    const basename = import.meta.env.MODE === 'production' ? '/WebDeployementReact' : '';
     return (
-        <BrowserRouter basename={basename}>
+       <HashRouter>
             <AppContent />
-        </BrowserRouter>
+       </HashRouter>
     );
 }
