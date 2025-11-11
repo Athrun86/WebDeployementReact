@@ -10,38 +10,51 @@ dotenv.config({path: path.join(__dirname, '..', '.env') });
 
 console.log('DB_USER=', process.env.DB_USER, 'DB_HOST=', process.env.DB_HOST, 'DB_PORT=', process.env.DB_PORT);
 
-
-export const sequelize = new Sequelize(
-    process.env.DB_NAME as string,
-    process.env.DB_USER as string,
-    process.env.DB_PASS as string,
-    {
-        host: process.env.DB_HOST || 'localhost',
-        port: Number(process.env.DB_PORT) || 3308,
-        dialect: 'mariadb',
-        dialectOptions: require('mariadb'),
-        models: [Users, Project, Group, Student],
-
+// Configuration adaptée pour Railway
+const sequelizeConfig: any = {
+    dialect: 'mysql',
+    models: [Users, Project, Group, Student],
+    logging: console.log,
+    pool: {
+        max: 5,
+        min: 0,
+        acquire: 30000,
+        idle: 10000
     }
-);
+};
+
+// Priorité aux variables Railway puis fallback sur les variables personnalisées
+if (process.env.MYSQL_URL || process.env.DATABASE_URL) {
+    // Utiliser l'URL de connexion Railway
+    const dbUrl = process.env.MYSQL_URL || process.env.DATABASE_URL;
+    sequelizeConfig.url = dbUrl;
+} else {
+    // Configuration manuelle
+    sequelizeConfig.host = process.env.MYSQLHOST || process.env.DB_HOST || 'localhost';
+    sequelizeConfig.port = parseInt(process.env.MYSQLPORT || process.env.DB_PORT || '3306');
+    sequelizeConfig.username = process.env.MYSQLUSER || process.env.DB_USER || 'root';
+    sequelizeConfig.password = process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || process.env.DB_PASS;
+    sequelizeConfig.database = process.env.MYSQLDATABASE || process.env.DB_NAME || 'railway';
+}
+
+export const sequelize = new Sequelize(sequelizeConfig);
+
 export async function testConnection() {
     try {
         await sequelize.authenticate();
-        console.log('Sequelize: authentification réussie');
+        console.log('✅ Sequelize: authentification réussie');
         try {
             const count = await Users.count();
             console.log('Users table accessible, rows =', count);
         } catch (e: any) {
             console.warn('Impossible d\'accéder à Users via le modèle:', e?.message);
-            // fallback basique
             const [[res]] = await sequelize.query('SELECT 1 AS ok');
             console.log('SELECT 1 result:', res);
         }
     } catch (err: any) {
-        console.error('Sequelize authenticate failed:', err.message ?? err);
+        console.error('❌ Sequelize authenticate failed:', err.message ?? err);
         throw err;
     }
-
 }
 
 // Associations
