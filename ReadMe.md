@@ -76,6 +76,8 @@ Créez un fichier `.env` dans les dossiers `backend` et `frontend` avec
 les variables d'environnement nécessaires (voir exemples ci-dessus).
 pour Frontend:
 VITE_API_URL = votre URL backend Railway ou localhost si en local
+MODE = development ou production selon le cas 
+Très importnt d'ajouter cette variable pour github pages pour savoir si il est en prod
 ###3. Lancer la base de données MySQL locale
 Assurez-vous d'avoir MariaDb installé et en cours d'exécution sur votre machine locale.
 lancez le script database.ts pour créer les tables nécessaires:
@@ -108,3 +110,6 @@ npm run dev
 Hébergement du site web
 https://athrun86.github.io/WebDeployementReact
 ```
+lien vidéo de présentation
+
+https://youtu.be/p86_50Rkafk
