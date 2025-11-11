@@ -81,7 +81,7 @@ function AppContent() {
  */
 export default function App() {
     return (
-        <BrowserRouter>
+        <BrowserRouter basename="/WebDeployementReact">
             <AppContent />
         </BrowserRouter>
     );
