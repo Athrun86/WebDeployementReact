@@ -209,7 +209,7 @@ export const ProjectFormProvider: React.FC<ProjectFormProviderProps> = ({ childr
     };
 
     const generateInviteLink = (editId?: string): string => {
-        const baseUrl = import.meta.env.MODE==='production'
+        const baseUrl = import.meta.env.MODE === 'production'
             ? `${window.location.origin}/WebDeployementReact`
             : window.location.origin;
 
